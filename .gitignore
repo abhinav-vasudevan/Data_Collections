@@ -1,0 +1,30 @@
+# Ignore node_modules and build output
+node_modules/
+dist/
+build/
+
+# Ignore environment files
+.env
+
+# Ignore logs
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore uploads
+uploads/
+
+# Ignore generated images
+attached_assets/generated_images/
+
+# Ignore participant reports
+participant_reports/
+
+# Ignore VS Code settings
+.vscode/
