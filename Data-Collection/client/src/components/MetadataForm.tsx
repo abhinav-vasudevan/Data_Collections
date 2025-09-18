@@ -6,17 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, MapPin } from "lucide-react";
+import { User } from "lucide-react";
 
 export interface ParticipantData {
   name: string;
   age: string;
   gender: string;
-  city: string;
-  country: string;
+  skinType: string;
   hairType: string;
-  hairLength: string;
-  hairDensity: string;
   hairCondition: string;
   scalpType: string;
   recentTreatments: string;
@@ -55,7 +52,6 @@ export default function MetadataForm({ onDataChange, data }: MetadataFormProps) 
             <User className="h-4 w-4" />
             Personal Details
           </h3>
-          
           <div className="grid gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
@@ -67,7 +63,6 @@ export default function MetadataForm({ onDataChange, data }: MetadataFormProps) 
                 data-testid="input-name"
               />
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="age">Age</Label>
@@ -82,7 +77,6 @@ export default function MetadataForm({ onDataChange, data }: MetadataFormProps) 
                   data-testid="input-age"
                 />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="gender">Gender</Label>
                 <Select value={data.gender || ""} onValueChange={(value) => updateField("gender", value)}>
@@ -92,51 +86,15 @@ export default function MetadataForm({ onDataChange, data }: MetadataFormProps) 
                   <SelectContent>
                     <SelectItem value="female">Female</SelectItem>
                     <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="non-binary">Non-binary</SelectItem>
-                    <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Location */}
+        {/* Hair Characteristics - removed heading, keep fields below */}
         <div className="space-y-4">
-          <h3 className="font-medium flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            Location
-          </h3>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                value={data.city || ""}
-                onChange={(e) => updateField("city", e.target.value)}
-                placeholder="City"
-                data-testid="input-city"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Input
-                id="country"
-                value={data.country || ""}
-                onChange={(e) => updateField("country", e.target.value)}
-                placeholder="Country"
-                data-testid="input-country"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Hair Characteristics */}
-        <div className="space-y-4">
-          <h3 className="font-medium">Hair Characteristics</h3>
-          
           <div className="grid gap-4">
             <div className="space-y-2">
               <Label>Hair Type</Label>
@@ -152,37 +110,21 @@ export default function MetadataForm({ onDataChange, data }: MetadataFormProps) 
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Hair Length</Label>
-                <Select value={data.hairLength || ""} onValueChange={(value) => updateField("hairLength", value)}>
-                  <SelectTrigger data-testid="select-hair-length">
-                    <SelectValue placeholder="Select length" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="short">Short</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="long">Long</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Hair Density</Label>
-                <Select value={data.hairDensity || ""} onValueChange={(value) => updateField("hairDensity", value)}>
-                  <SelectTrigger data-testid="select-hair-density">
-                    <SelectValue placeholder="Select density" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label>Skin Type</Label>
+              <Select value={data.skinType || ""} onValueChange={(value) => updateField("skinType", value)}>
+                <SelectTrigger data-testid="select-skin-type">
+                  <SelectValue placeholder="Select skin type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="oily">Oily</SelectItem>
+                  <SelectItem value="dry">Dry</SelectItem>
+                  <SelectItem value="combination">Combination</SelectItem>
+                  <SelectItem value="normal">Normal</SelectItem>
+                  <SelectItem value="sensitivity">Sensitivity</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-
             <div className="space-y-2">
               <Label>Hair Condition</Label>
               <Select value={data.hairCondition || ""} onValueChange={(value) => updateField("hairCondition", value)}>
@@ -200,7 +142,6 @@ export default function MetadataForm({ onDataChange, data }: MetadataFormProps) 
                 </SelectContent>
               </Select>
             </div>
-
             <div className="space-y-2">
               <Label>Scalp Type</Label>
               <Select value={data.scalpType || ""} onValueChange={(value) => updateField("scalpType", value)}>
@@ -217,11 +158,9 @@ export default function MetadataForm({ onDataChange, data }: MetadataFormProps) 
             </div>
           </div>
         </div>
-
         {/* Treatment History */}
         <div className="space-y-4">
           <h3 className="font-medium">Treatment & Condition History</h3>
-          
           <div className="space-y-4">
             <div className="space-y-3">
               <Label>Any recent hair treatments?</Label>

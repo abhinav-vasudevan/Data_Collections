@@ -18,8 +18,8 @@ interface ProgressTrackerProps {
 export default function ProgressTracker({ images, metadata }: ProgressTrackerProps) {
   const requiredImageSlots = ["skin1", "skin2", "skin3", "hair1", "hair2"];
   const requiredMetadataFields: (keyof ParticipantData)[] = [
-    "name", "age", "gender", "city", "country", 
-    "hairType", "hairLength", "hairDensity", "hairCondition", "scalpType",
+    "name", "age", "gender",
+    "hairType", "skinType", "hairCondition", "scalpType",
     "recentTreatments", "scalpConditions"
   ];
 

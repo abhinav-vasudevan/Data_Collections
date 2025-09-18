@@ -19,11 +19,12 @@ interface SubmissionSectionProps {
 export default function SubmissionSection({ images, metadata, onSubmit }: SubmissionSectionProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   const requiredImageSlots = ["skin1", "skin2", "skin3", "hair1", "hair2"];
   const requiredMetadataFields: (keyof ParticipantData)[] = [
-    "name", "age", "gender", "city", "country", 
-    "hairType", "hairLength", "hairDensity", "hairCondition", "scalpType",
+    "name", "age", "gender",
+    "hairType", "skinType", "hairCondition", "scalpType",
     "recentTreatments", "scalpConditions"
   ];
 
@@ -38,33 +39,37 @@ export default function SubmissionSection({ images, metadata, onSubmit }: Submis
   const isReadyToSubmit = uploadedImagesCount === totalImages && completedMetadataCount === totalMetadata;
 
   const handleSubmit = async () => {
-    if (!isReadyToSubmit) return;
+    if (!isReadyToSubmit || !consentChecked) return;
 
     setIsSubmitting(true);
     console.log("Submitting data:", { images, metadata });
-    
     try {
       // Create FormData for file uploads
       const formData = new FormData();
-      
-      // Add participant metadata
-      formData.append('participantData', JSON.stringify(metadata));
-      
+      // Only include required backend fields
+      const backendFields = [
+        "name", "age", "gender",
+        "hairType", "skinType", "hairCondition", "scalpType",
+        "recentTreatments", "treatmentDetails", "scalpConditions", "conditionDetails"
+      ];
+      const filteredMetadata: Partial<ParticipantData> = {};
+      backendFields.forEach(field => {
+        const value = metadata[field as keyof ParticipantData];
+        if (value) filteredMetadata[field as keyof ParticipantData] = value;
+      });
+      formData.append('participantData', JSON.stringify(filteredMetadata));
       // Add image files
       Object.entries(images).forEach(([key, imageData]) => {
         if (imageData) {
           formData.append(key, imageData.file);
         }
       });
-      
-      // Submit to backend
+      // Submit to backend as multipart/form-data
       const response = await fetch('/api/submit', {
         method: 'POST',
         body: formData,
       });
-      
       const result = await response.json();
-      
       if (result.success) {
         setIsSubmitting(false);
         setShowConfirmation(true);
@@ -73,11 +78,9 @@ export default function SubmissionSection({ images, metadata, onSubmit }: Submis
       } else {
         throw new Error(result.message || 'Submission failed');
       }
-      
     } catch (error) {
       console.error("Submission error:", error);
       setIsSubmitting(false);
-      // You could show an error message to the user here
       alert(`Submission failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
@@ -154,9 +157,22 @@ export default function SubmissionSection({ images, metadata, onSubmit }: Submis
 
         {/* Submission Button */}
         <div className="pt-2">
+          <div className="mb-4 flex items-center">
+            <input
+              type="checkbox"
+              id="consent-checkbox"
+              required
+              className="mr-2"
+              checked={consentChecked}
+              onChange={e => setConsentChecked(e.target.checked)}
+            />
+            <label htmlFor="consent-checkbox" className="text-sm">
+              By clicking submit, I agree to provide my data and images for research purposes. My information will be used only for scientific study and kept confidential.
+            </label>
+          </div>
           <Button
             onClick={handleSubmit}
-            disabled={!isReadyToSubmit || isSubmitting}
+            disabled={!isReadyToSubmit || isSubmitting || !consentChecked}
             className="w-full"
             size="lg"
             data-testid="button-submit"
@@ -173,7 +189,6 @@ export default function SubmissionSection({ images, metadata, onSubmit }: Submis
               </>
             )}
           </Button>
-          
           {!isReadyToSubmit && (
             <p className="text-xs text-muted-foreground mt-2 text-center">
               Complete all photos and information to submit
