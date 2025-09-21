@@ -9,7 +9,9 @@ import { insertParticipantSchema } from "@shared/schema";
 import { z } from "zod";
 
 // Configure multer for file uploads
-const uploadDir = path.join(process.cwd(), 'uploads', 'images');
+const uploadRoot = process.env.UPLOAD_DIR
+  || (process.env.NODE_ENV === 'production' ? '/tmp' : process.cwd());
+const uploadDir = path.join(uploadRoot, 'uploads', 'images');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
