@@ -5,13 +5,15 @@ import hairBackImage from "@assets/generated_images/Hair_photo_example_back_view
 import scalpTopImage from "@assets/generated_images/Scalp_photo_example_top_view_cb0ac3cd.png";
 import faceImage from "@assets/generated_images/Face_photo_example_frontal_view_519cc774.png";
 import hairSideImage from "@assets/generated_images/Hair_photo_example_side_view_086717be.png";
+import leftSideImage from "@assets/generated_images/Left side.png";
+import rightSideImage from "@assets/generated_images/Right side.png";
 
 
 export default function InstructionsSection() {
   const photoExamples = [
     { title: "Skin Photo 1", subtitle: "Front View", image: faceImage },
-    { title: "Skin Photo 2", subtitle: "Left View", image: hairSideImage },
-    { title: "Skin Photo 3", subtitle: "Right View", image: hairSideImage },
+    { title: "Skin Photo 2", subtitle: "Left View", image: leftSideImage },
+    { title: "Skin Photo 3", subtitle: "Right View", image: rightSideImage },
     { title: "Hair/Scalp Photo 1", subtitle: "Top View", image: scalpTopImage },
     { title: "Hair/Scalp Photo 2", subtitle: "Back View", image: hairBackImage },
   ];
