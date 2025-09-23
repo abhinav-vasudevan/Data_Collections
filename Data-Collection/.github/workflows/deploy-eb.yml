@@ -1,0 +1,47 @@
+name: Deploy to Elastic Beanstalk
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install EB CLI
+        run: |
+          pipx install awsebcli
+
+      - name: Build app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy to EB
+        env:
+          EB_APP: ${{ secrets.EB_APP }}
+          EB_ENV: ${{ secrets.EB_ENV }}
+          EB_PLATFORM: ${{ secrets.EB_PLATFORM || 'Node.js 20 running on 64bit Amazon Linux 2023' }}
+        run: |
+          zip -r app.zip . -x "**/.git/**"
+          eb init "$EB_APP" --platform "$EB_PLATFORM" --region $AWS_REGION
+          eb use "$EB_ENV"
+          eb deploy --staged --label "ci-${GITHUB_SHA::7}"
