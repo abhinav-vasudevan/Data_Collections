@@ -70,6 +70,24 @@ AWS_SECRET_ACCESS_KEY=your_aws_secret
 S3_BUCKET_NAME=your_bucket_name
 ```
 
+### Elastic Beanstalk Deployment (Backend)
+
+Requirements
+- AWS CLI + EB CLI configured and logged in
+- EB Platform: Node.js 20 running on 64bit Amazon Linux 2023
+
+Environment variables on EB
+- `NODE_ENV=production`
+- `DATABASE_URL=<postgres url>`
+- `UPLOAD_DIR=/tmp` (optional; default used in prod)
+- For S3 uploads (recommended):
+  - `AWS_REGION=<region>`
+  - `S3_BUCKET=<bucket-name>`
+
+Notes
+- Run once on your Postgres DB: `CREATE EXTENSION IF NOT EXISTS pgcrypto;`
+- Nginx upload limit set to 20MB via `.platform/nginx/conf.d/proxy.conf`
+
 ---
 
 ## Folder Structure

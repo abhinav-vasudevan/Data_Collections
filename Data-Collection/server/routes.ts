@@ -7,6 +7,7 @@ import path from "path";
 import fs from "fs";
 import { insertParticipantSchema } from "@shared/schema";
 import { z } from "zod";
+import { putObject } from "./s3";
 
 // Configure multer for file uploads
 const uploadRoot = process.env.UPLOAD_DIR
@@ -52,8 +53,10 @@ const expectedFields = [
 ];
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Serve uploaded images statically
-  app.use('/api/images', express.static(uploadDir));
+  // Serve uploaded images statically (dev only). In production, images are stored on S3.
+  if (process.env.NODE_ENV !== 'production') {
+    app.use('/api/images', express.static(uploadDir));
+  }
 
   // Submit research data with images
   app.post('/api/submit', upload.fields(expectedFields), async (req, res) => {
@@ -84,11 +87,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (fileArray && fileArray[0]) {
           const file = fileArray[0];
           console.log(`Processing image: ${imageType}`, file.filename);
-          
+          // Upload to S3 in production; keep local filename in dev
+          let storedFilename = file.filename;
+          if (process.env.NODE_ENV === 'production') {
+            const s3Key = `uploads/${participant.id}/${imageType}/${file.filename}`;
+            const buffer = await fs.promises.readFile(file.path);
+            await putObject({ key: s3Key, body: buffer, contentType: file.mimetype });
+            storedFilename = s3Key;
+          }
+
           const imageRecord = await storage.saveParticipantImage({
             participantId: participant.id,
             imageType,
-            filename: file.filename,
+            filename: storedFilename,
             originalName: file.originalname,
             mimeType: file.mimetype,
             fileSize: file.size,
